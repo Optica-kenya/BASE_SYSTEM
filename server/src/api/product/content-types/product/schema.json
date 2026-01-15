@@ -58,6 +58,12 @@
         "images",
         "files"
       ]
+    },
+    "sale_items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::sale-item.sale-item",
+      "mappedBy": "product"
     }
   }
 }

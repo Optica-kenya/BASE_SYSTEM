@@ -77,6 +77,12 @@
       "relation": "oneToMany",
       "target": "api::sale-meta.sale-meta",
       "mappedBy": "handled_by"
+    },
+    "payments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::payment.payment",
+      "mappedBy": "received_by"
     }
   }
 }

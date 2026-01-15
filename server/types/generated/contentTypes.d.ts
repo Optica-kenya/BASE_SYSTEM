@@ -470,6 +470,53 @@ export interface ApiClientClient extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiPaymentPayment extends Struct.CollectionTypeSchema {
+  collectionName: 'payments';
+  info: {
+    displayName: 'Payment';
+    pluralName: 'payments';
+    singularName: 'payment';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    amount: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::payment.payment'
+    > &
+      Schema.Attribute.Private;
+    method: Schema.Attribute.Enumeration<
+      ['cash', 'mpesa', 'card', 'bank_transfer']
+    >;
+    payment_date: Schema.Attribute.Date;
+    payment_ref: Schema.Attribute.String & Schema.Attribute.DefaultTo<'code'>;
+    payment_status: Schema.Attribute.Enumeration<['confirmed', 'reversed']>;
+    publishedAt: Schema.Attribute.DateTime;
+    received_by: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    sale: Schema.Attribute.Relation<'manyToOne', 'api::sale.sale'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiPrescriptionPrescription
   extends Struct.CollectionTypeSchema {
   collectionName: 'prescriptions';
@@ -558,11 +605,87 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
         },
         number
       >;
+    sale_items: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::sale-item.sale-item'
+    >;
     selling_price: Schema.Attribute.Decimal &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<0>;
     sku: Schema.Attribute.UID;
     stock_quantity: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiReceiptReceipt extends Struct.CollectionTypeSchema {
+  collectionName: 'receipts';
+  info: {
+    displayName: 'Receipt';
+    pluralName: 'receipts';
+    singularName: 'receipt';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::receipt.receipt'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSaleItemSaleItem extends Struct.CollectionTypeSchema {
+  collectionName: 'sale_items';
+  info: {
+    displayName: 'SaleItem';
+    pluralName: 'sale-items';
+    singularName: 'sale-item';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    added_at: Schema.Attribute.DateTime;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    line_total: Schema.Attribute.Decimal;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::sale-item.sale-item'
+    > &
+      Schema.Attribute.Private;
+    product: Schema.Attribute.Relation<'manyToOne', 'api::product.product'>;
+    publishedAt: Schema.Attribute.DateTime;
+    quantity: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    sale: Schema.Attribute.Relation<'manyToOne', 'api::sale.sale'>;
+    unit_price: Schema.Attribute.Decimal &
       Schema.Attribute.SetMinMax<
         {
           min: 0;
@@ -638,11 +761,16 @@ export interface ApiSaleSale extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::sale.sale'> &
       Schema.Attribute.Private;
+    payments: Schema.Attribute.Relation<'oneToMany', 'api::payment.payment'>;
     prescription: Schema.Attribute.Relation<
       'manyToOne',
       'api::prescription.prescription'
     >;
     publishedAt: Schema.Attribute.DateTime;
+    sale_items: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::sale-item.sale-item'
+    >;
     subtotal: Schema.Attribute.Decimal &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMax<
@@ -1155,6 +1283,7 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
+    payments: Schema.Attribute.Relation<'oneToMany', 'api::payment.payment'>;
     prescriptions: Schema.Attribute.Relation<
       'oneToMany',
       'api::prescription.prescription'
@@ -1194,8 +1323,11 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::client.client': ApiClientClient;
+      'api::payment.payment': ApiPaymentPayment;
       'api::prescription.prescription': ApiPrescriptionPrescription;
       'api::product.product': ApiProductProduct;
+      'api::receipt.receipt': ApiReceiptReceipt;
+      'api::sale-item.sale-item': ApiSaleItemSaleItem;
       'api::sale-meta.sale-meta': ApiSaleMetaSaleMeta;
       'api::sale.sale': ApiSaleSale;
       'plugin::content-releases.release': PluginContentReleasesRelease;
