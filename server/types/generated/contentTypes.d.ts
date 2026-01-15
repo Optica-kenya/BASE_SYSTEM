@@ -458,7 +458,58 @@ export interface ApiClientClient extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     notes: Schema.Attribute.Text;
     phone: Schema.Attribute.String & Schema.Attribute.Required;
+    prescriptions: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::prescription.prescription'
+    >;
     publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPrescriptionPrescription
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'prescriptions';
+  info: {
+    displayName: 'Prescription';
+    pluralName: 'prescriptions';
+    singularName: 'prescription';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    add_power: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    attachments: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+    client: Schema.Attribute.Relation<'manyToOne', 'api::client.client'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    diagnosis: Schema.Attribute.String;
+    left_axis: Schema.Attribute.Integer;
+    left_cylinder: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    left_sphere: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::prescription.prescription'
+    > &
+      Schema.Attribute.Private;
+    prescribed_by: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    prescription_date: Schema.Attribute.Date & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    pupillary_distance: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    right_axis: Schema.Attribute.Integer & Schema.Attribute.Required;
+    right_cylinder: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    right_sphere: Schema.Attribute.Decimal & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -977,7 +1028,6 @@ export interface PluginUsersPermissionsUser
   };
   options: {
     draftAndPublish: false;
-    timestamps: true;
   };
   attributes: {
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
@@ -1002,6 +1052,10 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
+    prescriptions: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::prescription.prescription'
+    >;
     provider: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     resetPasswordToken: Schema.Attribute.String & Schema.Attribute.Private;
@@ -1033,6 +1087,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::client.client': ApiClientClient;
+      'api::prescription.prescription': ApiPrescriptionPrescription;
       'api::product.product': ApiProductProduct;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

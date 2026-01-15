@@ -40,6 +40,12 @@
     },
     "notes": {
       "type": "text"
+    },
+    "prescriptions": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::prescription.prescription",
+      "mappedBy": "client"
     }
   }
 }

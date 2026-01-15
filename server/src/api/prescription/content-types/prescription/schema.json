@@ -1,0 +1,75 @@
+{
+  "kind": "collectionType",
+  "collectionName": "prescriptions",
+  "info": {
+    "singularName": "prescription",
+    "pluralName": "prescriptions",
+    "displayName": "Prescription"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "client": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::client.client",
+      "inversedBy": "prescriptions"
+    },
+    "right_cylinder": {
+      "type": "decimal",
+      "required": true
+    },
+    "right_axis": {
+      "type": "integer",
+      "required": true
+    },
+    "right_sphere": {
+      "type": "decimal",
+      "required": true
+    },
+    "left_sphere": {
+      "type": "decimal",
+      "required": true
+    },
+    "left_cylinder": {
+      "type": "decimal",
+      "required": true
+    },
+    "left_axis": {
+      "type": "integer"
+    },
+    "add_power": {
+      "type": "decimal",
+      "required": true
+    },
+    "pupillary_distance": {
+      "type": "decimal",
+      "required": true
+    },
+    "diagnosis": {
+      "type": "string"
+    },
+    "prescription_date": {
+      "type": "date",
+      "required": true
+    },
+    "attachments": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "prescribed_by": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "prescriptions"
+    }
+  }
+}
