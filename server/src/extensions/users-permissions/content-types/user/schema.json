@@ -71,6 +71,12 @@
       "relation": "oneToMany",
       "target": "api::prescription.prescription",
       "mappedBy": "prescribed_by"
+    },
+    "sale_metas": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::sale-meta.sale-meta",
+      "mappedBy": "handled_by"
     }
   }
 }

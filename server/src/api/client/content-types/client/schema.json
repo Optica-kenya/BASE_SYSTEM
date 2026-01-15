@@ -46,6 +46,12 @@
       "relation": "oneToMany",
       "target": "api::prescription.prescription",
       "mappedBy": "client"
+    },
+    "sales": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::sale.sale",
+      "mappedBy": "client"
     }
   }
 }

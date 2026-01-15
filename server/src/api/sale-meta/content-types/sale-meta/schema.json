@@ -1,0 +1,40 @@
+{
+  "kind": "collectionType",
+  "collectionName": "sale_metas",
+  "info": {
+    "singularName": "sale-meta",
+    "pluralName": "sale-metas",
+    "displayName": "Sale Meta"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "sale_date": {
+      "type": "date"
+    },
+    "sales_tatus": {
+      "type": "enumeration",
+      "enum": [
+        "draft",
+        "completed",
+        "cancelled"
+      ]
+    },
+    "handled_by": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "sale_metas"
+    },
+    "payment_status": {
+      "type": "enumeration",
+      "enum": [
+        "paid",
+        "partial",
+        "unpaid"
+      ]
+    }
+  }
+}

@@ -463,6 +463,7 @@ export interface ApiClientClient extends Struct.CollectionTypeSchema {
       'api::prescription.prescription'
     >;
     publishedAt: Schema.Attribute.DateTime;
+    sales: Schema.Attribute.Relation<'oneToMany', 'api::sale.sale'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -510,6 +511,7 @@ export interface ApiPrescriptionPrescription
     right_axis: Schema.Attribute.Integer & Schema.Attribute.Required;
     right_cylinder: Schema.Attribute.Decimal & Schema.Attribute.Required;
     right_sphere: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    sales: Schema.Attribute.Relation<'oneToMany', 'api::sale.sale'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -567,6 +569,107 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
         },
         number
       >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSaleMetaSaleMeta extends Struct.CollectionTypeSchema {
+  collectionName: 'sale_metas';
+  info: {
+    displayName: 'Sale Meta';
+    pluralName: 'sale-metas';
+    singularName: 'sale-meta';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    handled_by: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::sale-meta.sale-meta'
+    > &
+      Schema.Attribute.Private;
+    payment_status: Schema.Attribute.Enumeration<['paid', 'partial', 'unpaid']>;
+    publishedAt: Schema.Attribute.DateTime;
+    sale_date: Schema.Attribute.Date;
+    sales_tatus: Schema.Attribute.Enumeration<
+      ['draft', 'completed', 'cancelled']
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSaleSale extends Struct.CollectionTypeSchema {
+  collectionName: 'sales';
+  info: {
+    displayName: 'Sale';
+    pluralName: 'sales';
+    singularName: 'sale';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    client: Schema.Attribute.Relation<'manyToOne', 'api::client.client'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    discount: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::sale.sale'> &
+      Schema.Attribute.Private;
+    prescription: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::prescription.prescription'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    subtotal: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    tax: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    total: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1063,6 +1166,10 @@ export interface PluginUsersPermissionsUser
       'manyToOne',
       'plugin::users-permissions.role'
     >;
+    sale_metas: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::sale-meta.sale-meta'
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1089,6 +1196,8 @@ declare module '@strapi/strapi' {
       'api::client.client': ApiClientClient;
       'api::prescription.prescription': ApiPrescriptionPrescription;
       'api::product.product': ApiProductProduct;
+      'api::sale-meta.sale-meta': ApiSaleMetaSaleMeta;
+      'api::sale.sale': ApiSaleSale;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;
